@@ -1,0 +1,69 @@
+{
+    "menuSection": "Виртуальные элементы",
+    "configItem": [
+        {
+            "global": 0,
+            "name": "График",
+            "type": "Writing",
+            "subtype": "Loging",
+            "id": "log",
+            "widget": "chart2",
+            "page": "Графики",
+            "descr": "Температура",
+            "num": 1,
+            "int": 5,
+            "logid": "t",
+            "daysSave": 5,
+            "daysShow": 0,
+            "points": 300
+        },
+        {
+            "global": 0,
+            "name": "График по событию",
+            "type": "Writing",
+            "subtype": "Loging",
+            "id": "log",
+            "widget": "chart2",
+            "page": "Графики",
+            "descr": "Температура",
+            "int": 0,
+            "num": 1,
+            "daysSave": 5,
+            "daysShow": 0,
+            "points": 300
+        }
+    ],
+    "about": {
+        "authorName": "Dmitry Borisenko",
+        "authorContact": "https://t.me/Dmitry_Borisenko",
+        "authorGit": "https://github.com/DmitryBorisenko33",
+        "specialThanks": "@itsid1 @Valiuhaaa Serg",
+        "moduleName": "Loging",
+        "moduleVersion": "4.0",
+        "usedRam": {
+            "esp32_4mb": 15,
+            "esp8266_4mb": 15
+        },
+        "title": "Логирование в график",
+        "moduleDesc": "Расширение позволяющее логировать любую величину в график. Графики доступны в мобильном приложении и в веб интерфейсе. Данные графиков хранятся в встроенной памяти esp. В окне ввода даты можно выбирать день, историю которого вы хотите посмотреть. Старые файлы будут удаляться автоматически после того как объем оставшейся flesh памяти устройства будет менее 20 процентов",
+        "propInfo": {
+            "int": "Интервал логирования в мнутах, рекомендуется для esp8266 использоать интервал не менее 5-ти минут",
+            "logid": "ID величины которую будем логировать",
+            "points": "Максимальное количество точек в одном файле, может быть не более 300. Не рекомендуется менять этот параметр",
+            "daysSave": "Количество дней за которое надо хранить график",
+            "daysShow": "За какое количество дней отображать график при открытии"
+        }
+    },
+    "defActive": true,
+    "usedLibs": {
+        "esp32_4mb": [],
+        "esp32s2_4mb": [],
+        "esp8266_4mb": [],
+        "esp8266_1mb": [],
+        "esp8266_1mb_ota": [],
+        "esp8285_1mb": [],
+        "esp8285_1mb_ota": [],
+        "esp8266_2mb": [],
+        "esp8266_2mb_ota": []
+    }
+}

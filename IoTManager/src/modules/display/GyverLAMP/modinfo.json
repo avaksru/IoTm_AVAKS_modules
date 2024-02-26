@@ -1,0 +1,44 @@
+{
+    "menuSection": "Экраны",
+    "configItem": [
+        {
+            "global": 0,
+            "name": "GyverLAMP",
+            "type": "Reading",
+            "subtype": "GyverLAMP",
+            "id": "GyverLAMP",
+            "widget": "range",
+            "page": "Кнопки",
+            "descr": "GyverLAMP",
+            "needSave": 0,
+            "brightness": "10",
+            "speed": 30,
+            "dalay": 10000
+        }
+    ],
+    "about": {
+        "authorName": "",
+        "authorContact": "",
+        "authorGit": "",
+        "exampleURL": "",
+        "specialThanks": "",
+        "moduleName": "GyverLAMP",
+        "moduleVersion": "1",
+        "moduleDesc": "xxx",
+        "propInfo": {},
+        "funcInfo": []
+    },
+    "defActive": true,
+    "usedLibs": {
+        "esp32_4mb": [
+            "fastled/FastLED@^3.5.0"
+        ],
+        "esp8266_4mb": [
+            "fastled/FastLED@^3.5.0"
+        ],
+        "esp8266_1mb": [],
+        "esp8266_1mb_ota": [],
+        "esp8285_1mb": [],
+        "esp8285_1mb_ota": []
+    }
+}
