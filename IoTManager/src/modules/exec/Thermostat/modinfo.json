@@ -1,5 +1,5 @@
 {
-  "menuSection": "Исполнительные устройства",
+  "menuSection": "executive_devices",
   "configItem": [
     {
       "global": 0,
@@ -151,6 +151,7 @@
   "defActive": false,
   "usedLibs": {
     "esp32_4mb": [],
+    "esp32s2_4mb": [],
     "esp8266_4mb": [],
     "esp8266_1mb": [],
     "esp8266_1mb_ota": [],

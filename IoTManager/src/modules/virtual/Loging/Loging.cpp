@@ -388,19 +388,20 @@ public:
 
     void loop()
     {
-        if (enableDoByInt)
-        {
-            currentMillis = millis();
-            difference = currentMillis - prevMillis;
-            if (difference >= interval)
-            {
-                prevMillis = millis();
-                if (interval != 0)
-                {
-                    this->doByInterval();
-                }
-            }
-        }
+        /* if (enableDoByInt)
+         {
+             currentMillis = millis();
+             difference = currentMillis - prevMillis;
+             if (difference >= interval)
+             {
+                 prevMillis = millis();
+                 if (interval != 0)
+                 {
+                     this->doByInterval();
+                 }
+             }
+         }*/
+        IoTItem::loop();
     }
 
     void regEvent(const String &value, const String &consoleInfo, bool error = false, bool genEvent = true)

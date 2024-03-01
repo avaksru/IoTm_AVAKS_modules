@@ -21,7 +21,7 @@
         }
     ],
     "about": {
-        "authorName": "@Serghei63, AVAKS",
+        "authorName": "AVAKS",
         "authorContact": "https://t.me/avaks",
         "authorGit": "https://github.com/avaksru",
         "specialThanks": "@itsid1 @Valiuhaaa Serg @Serghei63",
@@ -44,6 +44,7 @@
     "defActive": true,
     "usedLibs": {
         "esp32_4mb": [],
+        "esp32s2_4mb": [],
         "esp32_16mb": [],
         "esp8266_4mb": [],
         "esp8266_16mb": [],
