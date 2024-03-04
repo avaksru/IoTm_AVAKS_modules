@@ -28,17 +28,13 @@
         "propInfo": {},
         "funcInfo": []
     },
-    "defActive": true,
+    "defActive": false,
     "usedLibs": {
-        "esp32_4mb": [
+        "esp32*": [
             "fastled/FastLED@^3.5.0"
         ],
-        "esp8266_4mb": [
+        "esp82*": [
             "fastled/FastLED@^3.5.0"
-        ],
-        "esp8266_1mb": [],
-        "esp8266_1mb_ota": [],
-        "esp8285_1mb": [],
-        "esp8285_1mb_ota": []
+        ]
     }
 }
