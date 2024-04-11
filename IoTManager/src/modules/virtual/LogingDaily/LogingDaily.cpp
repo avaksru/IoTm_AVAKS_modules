@@ -3,9 +3,8 @@
 #include "ESPConfiguration.h"
 #include "NTP.h"
 
-class LogingDaily : public IoTItem
-{
-private:
+class LogingDaily : public IoTItem {
+   private:
     String logid;
     String id;
     String filesList = "";
@@ -26,11 +25,10 @@ private:
     String prevDate = "";
     bool firstTimeInit = true;
 
-    long interval;
+    // long interval;
 
-public:
-    LogingDaily(String parameters) : IoTItem(parameters)
-    {
+   public:
+    LogingDaily(String parameters) : IoTItem(parameters) {
         jsonRead(parameters, F("logid"), logid);
         jsonRead(parameters, F("id"), id);
         jsonRead(parameters, F("points"), points);
@@ -38,28 +36,24 @@ public:
         jsonRead(parameters, F("telegram"), telegram);
         jsonRead(parameters, F("descr"), descr);
 
-        if (points > 365)
-        {
-            points = 365;
-            SerialPrint("E", F("LogingDaily"), "'" + id + "' user set more points than allowed, value reset to 365");
+        if (points > 200) {
+            points = 200;
+            SerialPrint("E", F("LogingDaily"), "'" + id + "' user set more points than allowed, value reset to 200");
         }
-        jsonRead(parameters, F("int"), interval);
-        interval = interval * 1000 * 60; // приводим к милисекундам
+        long interval;
+        jsonRead(parameters, F("int"), interval);  // в минутах
+        setInterval(interval * 60);
     }
 
-    void doByInterval()
-    {
-        if (hasDayChanged() || testMode == 1)
-        {
+    void doByInterval() {
+        if (hasDayChanged() || testMode == 1) {
             execute();
         }
     }
 
-    void execute()
-    {
+    void execute() {
         // если объект логгирования не был создан
-        if (!isItemExist(logid))
-        {
+        if (!isItemExist(logid)) {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' LogingDaily object not exist, return");
             return;
         }
@@ -67,15 +61,13 @@ public:
         String value = getItemValue(logid);
 
         // если значение логгирования пустое
-        if (value == "")
-        {
+        if (value == "") {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' LogingDaily value is empty, return");
             return;
         }
 
         // если время не было получено из интернета
-        if (!isTimeSynch)
-        {
+        if (!isTimeSynch) {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' Cant LogingDaily - time not synchronized, return");
             return;
         }
@@ -90,13 +82,10 @@ public:
 
         float difference = currentValue - prevValue;
 
-        if (telegram == 1)
-        {
+        if (telegram == 1) {
             String msg = descr + ": total " + String(currentValue) + ", consumed " + String(difference);
-            for (std::list<IoTItem *>::iterator it = IoTItems.begin(); it != IoTItems.end(); ++it)
-            {
-                if ((*it)->getSubtype() == "TelegramLT" || "Telegram")
-                {
+            for (std::list<IoTItem *>::iterator it = IoTItems.begin(); it != IoTItems.end(); ++it) {
+                if ((*it)->getSubtype() == "TelegramLT" || "Telegram" || "Telegram_v2") {
                     (*it)->sendTelegramMsg(false, msg);
                 }
             }
@@ -109,8 +98,7 @@ public:
         String filePath = readDataDB(id);
 
         // если данные о файле отсутствуют, создадим новый
-        if (filePath == "failed" || filePath == "")
-        {
+        if (filePath == "failed" || filePath == "") {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' file path not found, start create new file");
             createNewFileWithData(logData);
             return;
@@ -122,64 +110,52 @@ public:
         SerialPrint("i", F("LogingDaily"), "'" + id + "' " + "lines = " + String(lines) + ", size = " + String(size));
 
         // если количество строк до заданной величины и дата не менялась
-        if (lines <= points && !hasDayChanged())
-        {
+        if (lines <= points && !hasDayChanged()) {
             // просто добавим в существующий файл новые данные
             addNewDataToExistingFile(filePath, logData);
             // если больше или поменялась дата то создадим следующий файл
-        }
-        else
-        {
+        } else {
             createNewFileWithData(logData);
         }
     }
 
-    void createNewFileWithData(String &logData)
-    {
+    void createNewFileWithData(String &logData) {
         logData = logData + ",";
 
-        String path = "/lgd/" + id + "/" + id + ".txt"; // создадим путь вида /lgd/id/id.txt
+        String path = "/lgd/" + id + "/" + id + ".txt";  // создадим путь вида /lgd/id/id.txt
         // создадим пустой файл
-        if (writeEmptyFile(path) != "success")
-        {
+        if (writeEmptyFile(path) != "success") {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' file writing error, return");
             return;
         }
 
         // запишем в него данные
-        if (addFile(path, logData) != "success")
-        {
+        if (addFile(path, logData) != "success") {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' data writing error, return");
             return;
         }
         // запишем путь к нему в базу данных
-        if (saveDataDB(id, path) != "success")
-        {
+        if (saveDataDB(id, path) != "success") {
             SerialPrint("E", F("LogingDaily"), "'" + id + "' db file writing error, return");
             return;
         }
         SerialPrint("i", F("LogingDaily"), "'" + id + "' file created http://" + WiFi.localIP().toString() + path);
     }
 
-    void addNewDataToExistingFile(String &path, String &logData)
-    {
+    void addNewDataToExistingFile(String &path, String &logData) {
         logData = logData + ",";
-        if (addFile(path, logData) != "success")
-        {
+        if (addFile(path, logData) != "success") {
             SerialPrint("i", F("LogingDaily"), "'" + id + "' file writing error, return");
             return;
         };
         SerialPrint("i", F("LogingDaily"), "'" + id + "' LogingDaily in file http://" + WiFi.localIP().toString() + path);
     }
 
-    bool hasDayChanged()
-    {
+    bool hasDayChanged() {
         bool changed = false;
         String currentDate = getTodayDateDotFormated();
-        if (!firstTimeInit)
-        {
-            if (prevDate != currentDate)
-            {
+        if (!firstTimeInit) {
+            if (prevDate != currentDate) {
                 changed = true;
                 SerialPrint("i", F("NTP"), F("Change day event"));
 #if defined(ESP8266)
@@ -189,14 +165,12 @@ public:
 #endif
             }
         }
-        if (isTimeSynch)
-            firstTimeInit = false;
+        if (isTimeSynch) firstTimeInit = false;
         prevDate = currentDate;
         return changed;
     }
 
-    void publishValue()
-    {
+    void publishValue() {
         String dir = "/lgd/" + id;
         filesList = getFilesList(dir);
 
@@ -204,24 +178,18 @@ public:
 
         int f = 0;
 
-        while (filesList.length())
-        {
+        while (filesList.length()) {
             String path = selectToMarker(filesList, ";");
 
             path = "/lgd/" + id + path;
 
             f++;
             String json = getAdditionalJson();
-            if (_publishType == TO_MQTT)
-            {
+            if (_publishType == TO_MQTT) {
                 publishChartFileToMqtt(path, id, calculateMaxCount());
-            }
-            else if (_publishType == TO_WS)
-            {
+            } else if (_publishType == TO_WS) {
                 sendFileToWsByFrames(path, "charta", json, _wsNum, WEB_SOCKETS_FRAME_SIZE);
-            }
-            else if (_publishType == TO_MQTT_WS)
-            {
+            } else if (_publishType == TO_MQTT_WS) {
                 publishChartFileToMqtt(path, id, calculateMaxCount());
                 sendFileToWsByFrames(path, "charta", json, _wsNum, WEB_SOCKETS_FRAME_SIZE);
             }
@@ -231,15 +199,13 @@ public:
         }
     }
 
-    String getAdditionalJson()
-    {
+    String getAdditionalJson() {
         String topic = mqttRootDevice + "/" + id;
         String json = "{\"maxCount\":" + String(calculateMaxCount()) + ",\"topic\":\"" + topic + "\"}";
         return json;
     }
 
-    void clearHistory()
-    {
+    void clearHistory() {
         String dir = "/lgd/" + id;
         cleanDirectory(dir);
     }
@@ -251,59 +217,42 @@ public:
     //     standWebSocket.broadcastTXT(pk);
     // }
 
-    void setPublishDestination(int publishType, int wsNum = -1)
-    {
+    void setPublishDestination(int publishType, int wsNum = -1) {
         _publishType = publishType;
         _wsNum = wsNum;
     }
 
-    String getValue()
-    {
-        return "";
-    }
+    String getValue() { return ""; }
 
-    void loop()
-    {
-        /* if (enableDoByInt) {
-             currentMillis = millis();
-             difference = currentMillis - prevMillis;
-             if (difference >= interval) {
-                 prevMillis = millis();
-                 this->doByInterval();
-             }
-         }*/
-        IoTItem::loop();
-    }
+    // void loop() {
+    //     if (enableDoByInt) {
+    //         currentMillis = millis();
+    //         difference = currentMillis - prevMillis;
+    //         if (difference >= interval) {
+    //             prevMillis = millis();
+    //             this->doByInterval();
+    //         }
+    //     }
+    // }
 
     // просто максимальное количество точек
-    int calculateMaxCount()
-    {
-        return 86400;
-    }
+    int calculateMaxCount() { return 86400; }
 
-    void onModuleOrder(String &key, String &value)
-    {
-        if (key == "defvalue")
-        {
+    void onModuleOrder(String &key, String &value) {
+        if (key == "defvalue") {
             saveDataDB(id + "-v", value);
             SerialPrint("i", F("LogingDaily"), "User set default value: " + value);
-        }
-        else if (key == "reset")
-        {
+        } else if (key == "reset") {
             clearHistory();
             SerialPrint("i", F("LogingDaily"), F("User clean chart history"));
         }
     }
 };
 
-void *getAPI_LogingDaily(String subtype, String param)
-{
-    if (subtype == F("LogingDaily"))
-    {
+void *getAPI_LogingDaily(String subtype, String param) {
+    if (subtype == F("LogingDaily")) {
         return new LogingDaily(param);
-    }
-    else
-    {
+    } else {
         return nullptr;
     }
 }

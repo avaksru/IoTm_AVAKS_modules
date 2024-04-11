@@ -26,7 +26,7 @@ private:
     String prevDate = "";
     bool firstTimeInit = true;
 
-    long interval;
+    // long interval;
 
 public:
     Loging(String parameters) : IoTItem(parameters)
@@ -39,8 +39,9 @@ public:
             points = 300;
             SerialPrint("E", F("Loging"), "'" + id + "' user set more points than allowed, value reset to 300");
         }
-        jsonRead(parameters, F("int"), interval);
-        interval = interval * 1000 * 60; // приводим к милисекундам
+        long interval;
+        jsonRead(parameters, F("int"), interval); // в минутах
+        setInterval(interval * 60);
         // jsonRead(parameters, F("keepdays"), keepdays, false);
 
         jsonRead(parameters, F("daysSave"), days);
@@ -56,13 +57,6 @@ public:
 
     void doByInterval()
     {
-        // если время не было получено из интернета
-        if (!isTimeSynch)
-        {
-            SerialPrint("E", F("Loging"), "'" + id + "' Сant loging - time not synchronized, return");
-            return;
-        }
-        deleteOldFile();
         // если объект логгирования не был создан
         if (!isItemExist(logid))
         {
@@ -77,6 +71,14 @@ public:
             SerialPrint("E", F("Loging"), "'" + id + "' loging value is empty, return");
             return;
         }
+
+        // если время не было получено из интернета
+        if (!isTimeSynch)
+        {
+            SerialPrint("E", F("Loging"), "'" + id + "' Сant loging - time not synchronized, return");
+            return;
+        }
+        deleteOldFile();
 
         regEvent(value, F("Loging"));
 
@@ -331,7 +333,7 @@ public:
     {
         IoTFSInfo tmp = getFSInfo();
         SerialPrint("i", "Loging", String(tmp.freePer) + " % free flash remaining");
-        if (tmp.freePer <= 20.00)
+        if (tmp.freePer <= 10.00)
         {
             String dir = "/lg/" + id;
             filesList = getFilesList(dir);
@@ -381,28 +383,20 @@ public:
         _wsNum = wsNum;
     }
 
-    String getValue()
-    {
-        return "";
-    }
+    String getValue() { return ""; }
 
-    void loop()
-    {
-        /* if (enableDoByInt)
-         {
-             currentMillis = millis();
-             difference = currentMillis - prevMillis;
-             if (difference >= interval)
-             {
-                 prevMillis = millis();
-                 if (interval != 0)
-                 {
-                     this->doByInterval();
-                 }
-             }
-         }*/
-        IoTItem::loop();
-    }
+    // void loop() {
+    //     if (enableDoByInt) {
+    //         currentMillis = millis();
+    //         difference = currentMillis - prevMillis;
+    //         if (difference >= interval) {
+    //             prevMillis = millis();
+    //             if (interval != 0) {
+    //                 this->doByInterval();
+    //             }
+    //         }
+    //     }
+    // }
 
     void regEvent(const String &value, const String &consoleInfo, bool error = false, bool genEvent = true)
     {
@@ -420,16 +414,10 @@ public:
     }
 
     // просто максимальное количество точек
-    int calculateMaxCount()
-    {
-        return 86400;
-    }
+    int calculateMaxCount() { return 86400; }
 
     // путь вида: /lg/log/1231231.txt
-    unsigned long getFileUnixLocalTime(String path)
-    {
-        return gmtTimeToLocal(selectToMarkerLast(deleteToMarkerLast(path, "."), "/").toInt() + START_DATETIME);
-    }
+    unsigned long getFileUnixLocalTime(String path) { return gmtTimeToLocal(selectToMarkerLast(deleteToMarkerLast(path, "."), "/").toInt() + START_DATETIME); }
     void setValue(const IoTValue &Value, bool genEvent = true)
     {
         value = Value;
@@ -507,7 +495,4 @@ public:
     }
 };
 
-void *getAPI_Date(String param)
-{
-    return new Date(param);
-}
+void *getAPI_Date(String param) { return new Date(param); }
