@@ -78,7 +78,8 @@ public:
             SerialPrint("E", F("Loging"), "'" + id + "' Сant loging - time not synchronized, return");
             return;
         }
-        // deleteOldFile();
+        if (hasDayChanged())
+            deleteOldFile();
 
         regEvent(value, F("Loging"));
 
@@ -143,7 +144,8 @@ public:
             SerialPrint("E", F("LogingEvent"), "'" + id + "' Сant loging - time not synchronized, return");
             return;
         }
-        //  deleteOldFile();
+        if (hasDayChanged())
+            deleteOldFile();
 
         regEvent(value, F("LogingEvent"));
         String logData;
@@ -263,27 +265,7 @@ public:
         while (filesList.length())
         {
             String path = selectToMarker(filesList, ";");
-
-            //------------ delete old files ----------------
-            String pathTodel = path;
-            pathTodel.replace("/", "");
-            pathTodel.replace(".txt", "");
-            int pathTodel_ = pathTodel.toInt();
             path = dir + path;
-
-            if (pathTodel_ < unixTimeShort - days)
-            {
-                removeFile(path);
-                SerialPrint("i", "Loging!!!!!!", path + " => old files been clean");
-            }
-            if (pathTodel_ < unixTimeShort - 5184000)
-            {
-                removeFile(path);
-                SerialPrint("i", "Loging!!!!!!", path + " => > 2 month files been clean");
-            }
-            //------------ delete old files ----------------
-
-            // path = "/lg/" + id + path;
 
             f++;
 
@@ -314,6 +296,24 @@ public:
             {
                 SerialPrint("i", F("Loging"), String(f) + ") " + path + ", " + getDateTimeDotFormatedFromUnix(fileUnixTimeLocal) + ", skipped");
             }
+            /*
+                        //------------ delete old files ----------------
+                        String pathTodel = path;
+                        pathTodel.replace("/", "");
+                        pathTodel.replace(".txt", "");
+                        int pathTodel_ = pathTodel.toInt();
+                        if (pathTodel_ < unixTimeShort - days)
+                        {
+                            removeFile(path);
+                            SerialPrint("i", "Loging!!!!!!", path + " => old files been clean");
+                        }
+                        if (pathTodel_ < unixTimeShort - 5184000)
+                        {
+                            removeFile(path);
+                            SerialPrint("i", "Loging!!!!!!", path + " => > 2 month files been clean");
+                        }
+                        //------------ delete old files ----------------
+            */
 
             filesList = deleteBeforeDelimiter(filesList, ";");
         }
@@ -376,7 +376,7 @@ public:
             }
         }
     }
-    /*
+
     void deleteOldFile()
     {
         String dir = "/lg/" + id;
@@ -405,7 +405,7 @@ public:
             filesList = deleteBeforeDelimiter(filesList, ";");
         }
     }
-*/
+
     void setPublishDestination(int publishType, int wsNum)
     {
         _publishType = publishType;
