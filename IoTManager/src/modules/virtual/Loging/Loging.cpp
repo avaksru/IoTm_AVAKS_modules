@@ -78,7 +78,7 @@ public:
             SerialPrint("E", F("Loging"), "'" + id + "' Сant loging - time not synchronized, return");
             return;
         }
-        deleteOldFile();
+        // deleteOldFile();
 
         regEvent(value, F("Loging"));
 
@@ -143,6 +143,8 @@ public:
             SerialPrint("E", F("LogingEvent"), "'" + id + "' Сant loging - time not synchronized, return");
             return;
         }
+        //  deleteOldFile();
+
         regEvent(value, F("LogingEvent"));
         String logData;
         jsonWriteInt(logData, "x", unixTime, false);
@@ -262,13 +264,33 @@ public:
         {
             String path = selectToMarker(filesList, ";");
 
-            path = "/lg/" + id + path;
+            //------------ delete old files ----------------
+            String pathTodel = path;
+            pathTodel.replace("/", "");
+            pathTodel.replace(".txt", "");
+            int pathTodel_ = pathTodel.toInt();
+            path = dir + path;
+
+            if (pathTodel_ < unixTimeShort - days)
+            {
+                removeFile(path);
+                SerialPrint("i", "Loging!!!!!!", path + " => old files been clean");
+            }
+            if (pathTodel_ < unixTimeShort - 5184000)
+            {
+                removeFile(path);
+                SerialPrint("i", "Loging!!!!!!", path + " => > 2 month files been clean");
+            }
+            //------------ delete old files ----------------
+
+            // path = "/lg/" + id + path;
 
             f++;
 
             unsigned long fileUnixTimeLocal = getFileUnixLocalTime(path);
 
             unsigned long reqUnixTime = strDateToUnix(getItemValue(id + "-date"));
+
             if (fileUnixTimeLocal > reqUnixTime - daysShow && fileUnixTimeLocal < reqUnixTime + 86400)
             {
                 noData = false;
@@ -354,6 +376,7 @@ public:
             }
         }
     }
+    /*
     void deleteOldFile()
     {
         String dir = "/lg/" + id;
@@ -371,12 +394,18 @@ public:
             if (pathTodel_ < unixTimeShort - days)
             {
                 removeFile(path);
-                SerialPrint("i", "Loging!!!!!!", String(i) + ") " + path + " => old files been deleted");
+                SerialPrint("i", "Loging!!!!!!", String(i) + ") " + path + " => old files been clean");
             }
+            if (pathTodel_ < unixTimeShort - 5184000)
+            {
+                removeFile(path);
+                SerialPrint("i", "Loging!!!!!!", String(i) + ") " + path + " => > 2 month files been clean");
+            }
+
             filesList = deleteBeforeDelimiter(filesList, ";");
         }
     }
-
+*/
     void setPublishDestination(int publishType, int wsNum)
     {
         _publishType = publishType;
